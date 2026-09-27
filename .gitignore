@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# Build output (the committed single-file build lives in dist/ and is kept)
+# dist is intentionally tracked for zero-install usage; uncomment to ignore rebuilds:
+# dist/*.html.tmp
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment & local config
+.env
+.env.*
+!.env.example
+*.local
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Test / coverage
+coverage/
+.nyc_output/
+
+# Generated icon working dirs
+output/
+*.zip

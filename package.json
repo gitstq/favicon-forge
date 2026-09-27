@@ -1,0 +1,38 @@
+{
+  "name": "favicon-forge",
+  "version": "1.0.0",
+  "description": "All-in-one offline favicon & PWA icon forge. One source -> .ico, multi-size PNG, apple-touch-icon, SVG, webmanifest and copy-paste HTML. Zero dependencies, 100% local.",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "scripts": {
+    "test": "node --test",
+    "build": "node scripts/build.mjs",
+    "start": "node scripts/build.mjs"
+  },
+  "keywords": [
+    "favicon",
+    "pwa",
+    "icon",
+    "apple-touch-icon",
+    "manifest",
+    "ico",
+    "offline",
+    "zero-dependency",
+    "privacy",
+    "generator"
+  ],
+  "license": "MIT",
+  "author": "gitstq",
+  "engines": {
+    "node": ">=16"
+  },
+  "files": [
+    "src",
+    "dist",
+    "LICENSE",
+    "README.md"
+  ]
+}

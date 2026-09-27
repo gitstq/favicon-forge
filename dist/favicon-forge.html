@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Favicon Forge · 一站式离线图标工坊</title>
+<style>
+  :root{
+    --bg:#f4f6fa; --panel:#ffffff; --ink:#0f172a; --muted:#64748b; --line:#e5e9f0;
+    --accent:#2563eb; --accent-ink:#1d4ed8; --pop:#f97316;
+    --shadow:0 1px 2px rgba(15,23,42,.05),0 8px 24px -12px rgba(15,23,42,.18);
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.5;
+  }
+  header{
+    padding:22px 26px 16px; display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  }
+  .brand{font-size:22px;font-weight:800;letter-spacing:-.02em;display:flex;align-items:center;gap:10px}
+  .tagline{color:var(--muted);font-size:13.5px}
+  .badge-offline{font-size:12px;color:#065f46;background:#d1fae5;border:1px solid #a7f3d0;padding:3px 9px;border-radius:999px;font-weight:600}
+  main.layout{
+    display:grid; gap:18px; padding:6px 26px 30px;
+    grid-template-columns:340px 1fr 320px;
+  }
+  @media (max-width:1100px){ main.layout{grid-template-columns:1fr 1fr} .panel.export{grid-column:1/-1} }
+  @media (max-width:720px){ main.layout{grid-template-columns:1fr} .panel.export{grid-column:auto} }
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+  .panel h3{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:18px 0 10px}
+  .panel h3:first-child{margin-top:0}
+  .group{padding-bottom:6px}
+  label{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13.5px;margin:9px 0;color:#334155}
+  label.check{justify-content:flex-start}
+  input[type=text],input:not([type]),select{
+    width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:9px;font-size:14px;background:#fff;color:var(--ink);
+  }
+  input[type=color]{width:42px;height:30px;border:1px solid var(--line);border-radius:8px;background:#fff;padding:2px;cursor:pointer}
+  input[type=range]{flex:1;accent-color:var(--accent)}
+  .val{min-width:42px;text-align:right;font-variant-numeric:tabular-nums;color:var(--muted);font-size:12.5px}
+  .seg{display:flex;background:#f1f5f9;border:1px solid var(--line);border-radius:10px;padding:3px;gap:3px}
+  .seg button{flex:1;border:0;background:transparent;padding:7px 6px;border-radius:7px;font-size:13px;color:var(--muted);cursor:pointer;font-weight:600}
+  .seg button.active{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(15,23,42,.12)}
+  .pane{margin-top:12px}
+  .hidden{display:none !important}
+  .emoji-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin-top:10px}
+  .emoji-grid button{border:1px solid var(--line);background:#fff;border-radius:8px;font-size:18px;padding:5px 0;cursor:pointer;line-height:1}
+  .emoji-grid button:hover{background:#f8fafc;transform:translateY(-1px)}
+  .dropzone{
+    border:2px dashed #cbd5e1;border-radius:11px;padding:26px 12px;text-align:center;color:var(--muted);
+    font-size:13.5px;cursor:pointer;background:#f8fafc;transition:.15s;
+  }
+  .dropzone.drag{border-color:var(--accent);background:#eff6ff;color:var(--accent)}
+  .dropzone img{max-width:64px;max-height:64px;border-radius:9px;display:block;margin:0 auto 8px}
+  /* preview */
+  .tabbar{background:#e9edf3;border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;border:1px solid var(--line)}
+  .tabbar .tab{display:flex;align-items:center;gap:8px;background:#fff;border-radius:9px 9px 0 0;padding:8px 14px;font-size:13px;border:1px solid var(--line);border-bottom:0;box-shadow:0 -2px 6px -4px rgba(0,0,0,.1)}
+  .tabbar canvas{display:block}
+  .sizes{display:flex;align-items:flex-end;gap:18px;margin-top:16px;flex-wrap:wrap}
+  .sizes figure{margin:0;text-align:center}
+  .sizes canvas{image-rendering:auto;background:
+    repeating-conic-gradient(#f1f5f9 0% 25%, #ffffff 0% 50%) 50%/16px 16px;border:1px solid var(--line);border-radius:7px}
+  .sizes figcaption{font-size:11.5px;color:var(--muted);margin-top:6px}
+  .devices{display:flex;gap:26px;align-items:center;flex-wrap:wrap;margin-top:6px}
+  .device{text-align:center}
+  .iconwrap{position:relative;width:96px;height:96px;margin:0 auto;overflow:hidden;background:#fff;border:1px solid var(--line)}
+  .iconwrap canvas{width:100%;height:100%;display:block}
+  .iconwrap.ios{border-radius:22%}
+  .iconwrap.circle{border-radius:50%}
+  .iconwrap.squircle{border-radius:30%}
+  .iconwrap.dark{background:#0b1220;border-color:#1e293b}
+  .safezone{position:absolute;inset:10%;border:1.5px dashed rgba(249,115,22,.95);border-radius:50%;pointer-events:none}
+  .device small{display:block;color:var(--muted);font-size:11.5px;margin-top:8px}
+  .mini-controls{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 4px}
+  .mini-controls button{border:1px solid var(--line);background:#fff;border-radius:8px;font-size:12px;padding:6px 10px;cursor:pointer;color:#334155}
+  .mini-controls button.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+  /* export */
+  button.btn{width:100%;border:0;border-radius:11px;padding:13px;font-size:15px;font-weight:700;cursor:pointer}
+  button.btn.primary{background:var(--accent);color:#fff}
+  button.btn.primary:hover{background:var(--accent-ink)}
+  button.btn.ghost{background:#f1f5f9;color:var(--ink);margin-top:10px}
+  button.btn.ghost:hover{background:#e2e8f0}
+  pre.code{
+    background:#0f172a;color:#e2e8f0;padding:13px;border-radius:10px;font-size:11.5px;overflow:auto;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-all;
+    max-height:200px;margin:12px 0 0;
+  }
+  ul.files{list-style:none;margin:10px 0 0;padding:0}
+  ul.files li{display:flex;align-items:center;gap:8px;font-size:12.5px;padding:6px 8px;border-radius:8px;color:#334155}
+  ul.files li:hover{background:#f8fafc}
+  ul.files li .dl{margin-left:auto;border:1px solid var(--line);background:#fff;border-radius:7px;font-size:11.5px;padding:3px 9px;cursor:pointer;text-decoration:none;color:var(--ink)}
+  ul.files li .dl:hover{background:#eff6ff;border-color:#bfdbfe}
+  .toast{
+    position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);
+    background:var(--ink);color:#fff;padding:11px 18px;border-radius:10px;font-size:13.5px;
+    opacity:0;pointer-events:none;transition:.2s;box-shadow:var(--shadow);
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  footer{text-align:center;color:var(--muted);font-size:12.5px;padding:8px 20px 28px}
+  footer a{color:var(--accent);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">🦞 Favicon Forge</div>
+  <span class="badge-offline">● 100% 本地 · 离线 · 零上传</span>
+  <div class="tagline">一个素材，锻造 favicon.ico、多尺寸 PNG、Apple/Android 图标、SVG 与 webmanifest</div>
+</header>
+
+<main class="layout">
+  <!-- ============ CONTROLS ============ -->
+  <section class="panel controls">
+    <div class="group">
+      <h3>图标来源</h3>
+      <div class="seg" id="sourceSeg">
+        <button data-source="emoji" class="active">😀 Emoji</button>
+        <button data-source="text">🔤 文字</button>
+        <button data-source="image">🖼️ 图片</button>
+      </div>
+
+      <div class="pane" id="pane-emoji">
+        <label>Emoji 字符 <input type="text" id="emojiInput" value="🦞" maxlength="4" style="flex:1;margin-left:10px"></label>
+        <div class="emoji-grid" id="emojiGrid"></div>
+      </div>
+
+      <div class="pane hidden" id="pane-text">
+        <label>文字（1–3 字符） <input type="text" id="textInput" value="A" maxlength="3" style="flex:1;margin-left:10px"></label>
+        <label>文字颜色 <input type="color" id="textColor" value="#ffffff"></label>
+      </div>
+
+      <div class="pane hidden" id="pane-image">
+        <div class="dropzone" id="dropzone">点击选择，或把图片拖到这里<br><small>建议 512×512 以上的方形 PNG</small></div>
+        <input type="file" id="fileInput" accept="image/*" hidden>
+        <label class="check"><input type="radio" name="fit" value="contain" checked> 完整显示（contain）</label>
+        <label class="check"><input type="radio" name="fit" value="cover"> 填满裁剪（cover）</label>
+      </div>
+    </div>
+
+    <div class="group">
+      <h3>背景</h3>
+      <div class="seg" id="bgSeg">
+        <button data-bg="solid" class="active">纯色</button>
+        <button data-bg="gradient">渐变</button>
+        <button data-bg="transparent">透明</button>
+      </div>
+      <div id="bgSolidRow">
+        <label>背景颜色 <input type="color" id="bgColor1" value="#2563eb"></label>
+      </div>
+      <div class="hidden" id="bgGradRow">
+        <label>颜色 ① <input type="color" id="bgColor2a" value="#2563eb"></label>
+        <label>颜色 ② <input type="color" id="bgColor2b" value="#1e3a8a"></label>
+        <label>角度 <input type="range" id="bgAngle" min="0" max="360" value="90"><span class="val" id="bgAngleVal">90°</span></label>
+      </div>
+    </div>
+
+    <div class="group">
+      <h3>外形（标签页图标）</h3>
+      <label>圆角 <input type="range" id="radius" min="0" max="50" value="18"><span class="val" id="radiusVal">18%</span></label>
+      <label>内边距 <input type="range" id="padding" min="0" max="30" value="6"><span class="val" id="paddingVal">6%</span></label>
+    </div>
+
+    <div class="group">
+      <h3>PWA / 应用信息</h3>
+      <label>应用名称 <input type="text" id="appName" value="My App" style="flex:1;margin-left:10px"></label>
+      <label>主题色 <input type="color" id="themeColor" value="#2563eb"></label>
+      <label>启动背景色 <input type="color" id="launchBg" value="#ffffff"></label>
+    </div>
+  </section>
+
+  <!-- ============ PREVIEW ============ -->
+  <section class="panel preview">
+    <h3>浏览器标签页</h3>
+    <div class="tabbar">
+      <div class="tab"><canvas id="pvTab" width="128" height="128" style="width:16px;height:16px"></canvas><span id="tabName">My App</span></div>
+    </div>
+    <div class="sizes">
+      <figure><canvas id="pv16" width="64" height="64" style="width:16px;height:16px"></canvas><figcaption>16×16</figcaption></figure>
+      <figure><canvas id="pv32" width="128" height="128" style="width:32px;height:32px"></canvas><figcaption>32×32</figcaption></figure>
+      <figure><canvas id="pv48" width="128" height="128" style="width:48px;height:48px"></canvas><figcaption>48×48</figcaption></figure>
+    </div>
+
+    <h3>设备主屏幕</h3>
+    <div class="mini-controls">
+      <button data-mask="ios" class="active">iOS</button>
+      <button data-mask="circle">圆形</button>
+      <button data-mask="squircle">圆角方</button>
+      <button id="safeToggle">安全区</button>
+      <button id="darkToggle">深色壁纸</button>
+    </div>
+    <div class="devices">
+      <div class="device">
+        <div class="iconwrap ios" id="appleWrap"><canvas id="pvApple" width="180" height="180"></canvas><div class="safezone hidden" id="szApple"></div></div>
+        <small>apple-touch-icon 180</small>
+      </div>
+      <div class="device">
+        <div class="iconwrap circle" id="androidWrap"><canvas id="pvAndroid" width="192" height="192"></canvas><div class="safezone hidden" id="szAndroid"></div></div>
+        <small>android-chrome 192 / 512</small>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ EXPORT ============ -->
+  <section class="panel export">
+    <button class="btn primary" id="btnZip">⬇️ 下载全套图标包（.zip）</button>
+    <button class="btn ghost" id="btnCopyHtml">📋 复制 HTML &lt;head&gt; 代码</button>
+    <pre class="code" id="htmlCode"></pre>
+    <h3>包含文件</h3>
+    <ul class="files" id="fileList"></ul>
+  </section>
+</main>
+
+<footer>
+  Favicon Forge · MIT License · 所有渲染均在你的浏览器内完成，图片不会离开本机 ·
+  <a href="https://github.com/gitstq/favicon-forge" id="repoLink">GitHub</a>
+</footer>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+(function(){
+  var __src = {
+  "app.js": "// Favicon Forge — UI controller and asset pipeline (browser only).\n\nconst {drawIcon, canvasToPng} = require('render.js');\nconst {buildIco} = require('ico.js');\nconst {buildZip} = require('zip.js');\nconst {buildSvgFavicon} = require('svgfavicon.js');\nconst {buildManifest, buildHtmlLinks} = require('manifest.js');\n\nconst EMOJI_PRESETS = [\n  '🦞','🚀','⭐','🔥','💧','🌊','🎯','🧩','🍀','🌸','🐳','🦊',\n  '🍕','☕','🎵','⚡','🛰️','🧠','📦','🎨','🌙','🍊','🪐','👾',\n];\n\nconst state = {\n  source: 'emoji',\n  text: '🦞',\n  textColor: '#ffffff',\n  image: null,\n  imageFit: 'contain',\n  background: { type: 'solid', color: '#2563eb', color2: '#1e3a8a', angle: 90 },\n  radius: 0.18,\n  padding: 0.06,\n  appName: 'My App',\n  themeColor: '#2563eb',\n  bgColor: '#ffffff',\n};\n\nconst $ = (id) => document.getElementById(id);\n\n// ---------- toast ----------\nlet toastTimer;\nfunction toast(msg) {\n  const t = $('toast');\n  t.textContent = msg;\n  t.classList.add('show');\n  clearTimeout(toastTimer);\n  toastTimer = setTimeout(() => t.classList.remove('show'), 1800);\n}\n\n// ---------- helpers ----------\nfunction renderCanvas(size, opts) {\n  const c = document.createElement('canvas');\n  c.width = size;\n  c.height = size;\n  drawIcon(c.getContext('2d'), size, state, opts);\n  return c;\n}\n\nfunction download(bytes, filename, mime) {\n  const blob = new Blob([bytes], { type: mime || 'application/octet-stream' });\n  const url = URL.createObjectURL(blob);\n  const a = document.createElement('a');\n  a.href = url;\n  a.download = filename;\n  document.body.appendChild(a);\n  a.click();\n  a.remove();\n  setTimeout(() => URL.revokeObjectURL(url), 1500);\n}\n\nconst MIME = {\n  '.png': 'image/png',\n  '.ico': 'image/x-icon',\n  '.svg': 'image/svg+xml',\n  '.webmanifest': 'application/manifest+json',\n  '.zip': 'application/zip',\n};\nfunction mimeFor(name) {\n  const i = name.lastIndexOf('.');\n  return MIME[name.slice(i)] || 'application/octet-stream';\n}\n\n// ---------- preview ----------\nfunction redrawPreview() {\n  const draw = (id, size, opts) => {\n    const cv = $(id);\n    drawIcon(cv.getContext('2d'), size, state, opts);\n  };\n  draw('pvTab', 128, {});\n  draw('pv16', 64, {});\n  draw('pv32', 128, {});\n  draw('pv48', 128, {});\n  draw('pvApple', 180, { bleed: true, safePad: 0.1 });\n  draw('pvAndroid', 192, { bleed: true, safePad: 0.1 });\n  $('tabName').textContent = state.appName;\n  $('htmlCode').textContent = buildHtmlLinks({ themeColor: state.themeColor });\n}\n\n// ---------- asset pipeline ----------\nasync function buildAssets() {\n  const tabSizes = [16, 32, 48];\n  const tabPng = {};\n  for (const s of tabSizes) {\n    tabPng[s] = await canvasToPng(renderCanvas(s, {}));\n  }\n  const ico = buildIco(tabSizes.map((s) => ({ width: s, height: s, data: tabPng[s] })));\n  const apple = await canvasToPng(renderCanvas(180, { bleed: true, safePad: 0.1 }));\n  const p192 = await canvasToPng(renderCanvas(192, { bleed: true, safePad: 0.1 }));\n  const p512 = await canvasToPng(renderCanvas(512, { bleed: true, safePad: 0.1 }));\n\n  const svgCfg =\n    state.source === 'image'\n      ? {\n          kind: 'text',\n          text: (state.appName.trim()[0] || 'A').toUpperCase(),\n          textColor: state.textColor,\n          background: state.background,\n          radius: state.radius,\n        }\n      : {\n          kind: state.source === 'text' ? 'text' : 'emoji',\n          text: state.text,\n          textColor: state.textColor,\n          background: state.background,\n          radius: state.radius,\n        };\n  const svg = buildSvgFavicon(svgCfg);\n\n  const manifest = buildManifest({\n    name: state.appName,\n    shortName: state.appName,\n    themeColor: state.themeColor,\n    backgroundColor: state.bgColor,\n    icons: [\n      { src: '/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },\n      {\n        src: '/android-chrome-512x512.png',\n        sizes: '512x512',\n        type: 'image/png',\n        purpose: 'any maskable',\n      },\n    ],\n  });\n\n  const enc = new TextEncoder();\n  return [\n    ['favicon-16x16.png', tabPng[16]],\n    ['favicon-32x32.png', tabPng[32]],\n    ['favicon-48x48.png', tabPng[48]],\n    ['favicon.ico', ico],\n    ['apple-touch-icon.png', apple],\n    ['android-chrome-192x192.png', p192],\n    ['android-chrome-512x512.png', p512],\n    ['favicon.svg', enc.encode(svg)],\n    ['site.webmanifest', enc.encode(manifest)],\n  ];\n}\n\n// ---------- file list ----------\nconst LIST = [\n  ['favicon.ico', '多分辨率 IE/桌面图标（16/32/48）'],\n  ['favicon-16x16.png', '浏览器标签 16×16'],\n  ['favicon-32x32.png', '浏览器标签 32×32'],\n  ['favicon-48x48.png', 'Windows 磁贴 48×48'],\n  ['apple-touch-icon.png', 'iOS 主屏 180×180'],\n  ['android-chrome-192x192.png', 'Android/PWA 192×192'],\n  ['android-chrome-512x512.png', 'Android/PWA 512×512（maskable）'],\n  ['favicon.svg', '矢量图标，现代浏览器'],\n  ['site.webmanifest', 'PWA 清单文件'],\n];\nfunction renderFileList() {\n  const ul = $('fileList');\n  ul.innerHTML = '';\n  for (const [name, note] of LIST) {\n    const li = document.createElement('li');\n    li.innerHTML = `<span>📄 <b>${name}</b> · <small>${note}</small></span>`;\n    const dl = document.createElement('button');\n    dl.className = 'dl';\n    dl.textContent = '下载';\n    dl.onclick = async () => {\n      const files = await buildAssets();\n      const f = files.find((x) => x[0] === name);\n      if (f) download(f[1], name, mimeFor(name));\n    };\n    li.appendChild(dl);\n    ul.appendChild(li);\n  }\n}\n\n// ---------- bindings ----------\nfunction bind() {\n  // source switch\n  $('sourceSeg').querySelectorAll('button').forEach((b) => {\n    b.onclick = () => {\n      $('sourceSeg').querySelectorAll('button').forEach((x) => x.classList.remove('active'));\n      b.classList.add('active');\n      state.source = b.dataset.source;\n      ['emoji', 'text', 'image'].forEach((s) => {\n        $('pane-' + s).classList.toggle('hidden', s !== state.source);\n      });\n      state.text = state.source === 'text' ? $('textInput').value : $('emojiInput').value;\n      redrawPreview();\n    };\n  });\n\n  // emoji presets\n  const grid = $('emojiGrid');\n  EMOJI_PRESETS.forEach((e) => {\n    const b = document.createElement('button');\n    b.textContent = e;\n    b.onclick = () => {\n      $('emojiInput').value = e;\n      state.text = e;\n      redrawPreview();\n    };\n    grid.appendChild(b);\n  });\n\n  $('emojiInput').oninput = (e) => {\n    state.text = e.target.value;\n    redrawPreview();\n  };\n  $('textInput').oninput = (e) => {\n    state.text = e.target.value;\n    redrawPreview();\n  };\n  $('textColor').oninput = (e) => {\n    state.textColor = e.target.value;\n    redrawPreview();\n  };\n\n  // image upload\n  const dz = $('dropzone');\n  const fileInput = $('fileInput');\n  dz.onclick = () => fileInput.click();\n  fileInput.onchange = () => loadImageFile(fileInput.files[0]);\n  ['dragover', 'dragenter'].forEach((ev) =>\n    dz.addEventListener(ev, (e) => {\n      e.preventDefault();\n      dz.classList.add('drag');\n    })\n  );\n  ['dragleave', 'drop'].forEach((ev) =>\n    dz.addEventListener(ev, (e) => {\n      e.preventDefault();\n      dz.classList.remove('drag');\n    })\n  );\n  dz.addEventListener('drop', (e) => {\n    const f = e.dataTransfer.files && e.dataTransfer.files[0];\n    if (f) loadImageFile(f);\n  });\n\n  document.querySelectorAll('input[name=fit]').forEach((r) => {\n    r.onchange = () => {\n      state.imageFit = document.querySelector('input[name=fit]:checked').value;\n      redrawPreview();\n    };\n  });\n\n  // background\n  $('bgSeg').querySelectorAll('button').forEach((b) => {\n    b.onclick = () => {\n      $('bgSeg').querySelectorAll('button').forEach((x) => x.classList.remove('active'));\n      b.classList.add('active');\n      state.background.type = b.dataset.bg;\n      $('bgSolidRow').classList.toggle('hidden', state.background.type !== 'solid');\n      $('bgGradRow').classList.toggle('hidden', state.background.type !== 'gradient');\n      redrawPreview();\n    };\n  });\n  $('bgColor1').oninput = (e) => {\n    state.background.color = e.target.value;\n    redrawPreview();\n  };\n  $('bgColor2a').oninput = (e) => {\n    state.background.color = e.target.value;\n    redrawPreview();\n  };\n  $('bgColor2b').oninput = (e) => {\n    state.background.color2 = e.target.value;\n    redrawPreview();\n  };\n  $('bgAngle').oninput = (e) => {\n    state.background.angle = Number(e.target.value);\n    $('bgAngleVal').textContent = e.target.value + '°';\n    redrawPreview();\n  };\n\n  // shape\n  $('radius').oninput = (e) => {\n    state.radius = Number(e.target.value) / 100;\n    $('radiusVal').textContent = e.target.value + '%';\n    redrawPreview();\n  };\n  $('padding').oninput = (e) => {\n    state.padding = Number(e.target.value) / 100;\n    $('paddingVal').textContent = e.target.value + '%';\n    redrawPreview();\n  };\n\n  // PWA info\n  $('appName').oninput = (e) => {\n    state.appName = e.target.value || 'My App';\n    redrawPreview();\n  };\n  $('themeColor').oninput = (e) => {\n    state.themeColor = e.target.value;\n    redrawPreview();\n  };\n  $('launchBg').oninput = (e) => {\n    state.bgColor = e.target.value;\n    redrawPreview();\n  };\n\n  // device mask controls\n  document.querySelectorAll('[data-mask]').forEach((b) => {\n    b.onclick = () => {\n      document.querySelectorAll('[data-mask]').forEach((x) => x.classList.remove('active'));\n      b.classList.add('active');\n      const m = b.dataset.mask;\n      $('appleWrap').className = 'iconwrap ' + (m === 'ios' ? 'ios' : 'ios');\n      $('androidWrap').className =\n        'iconwrap ' + (m === 'ios' ? 'circle' : m) + ($('darkToggle').classList.contains('active') ? ' dark' : '');\n    };\n  });\n  $('safeToggle').onclick = () => {\n    $('safeToggle').classList.toggle('active');\n    const hide = !$('safeToggle').classList.contains('active');\n    $('szApple').classList.toggle('hidden', hide);\n    $('szAndroid').classList.toggle('hidden', hide);\n  };\n  $('darkToggle').onclick = () => {\n    $('darkToggle').classList.toggle('active');\n    const dark = $('darkToggle').classList.contains('active');\n    $('appleWrap').classList.toggle('dark', dark);\n    $('androidWrap').classList.toggle('dark', dark);\n  };\n\n  // export\n  $('btnZip').onclick = async () => {\n    const assets = await buildAssets();\n    const files = assets.map(([name, data]) => ({ name, data }));\n    const zip = buildZip(files, { date: new Date(2026, 0, 1) });\n    const slug = (state.appName || 'icons')\n      .toLowerCase()\n      .replace(/[^a-z0-9]+/g, '-')\n      .replace(/^-+|-+$/g, '');\n    download(zip, `${slug || 'favicon'}-icons.zip`, MIME['.zip']);\n    toast('✅ 全套图标包已开始下载');\n  };\n\n  $('btnCopyHtml').onclick = async () => {\n    const text = $('htmlCode').textContent;\n    try {\n      await navigator.clipboard.writeText(text);\n      toast('📋 HTML 代码已复制到剪贴板');\n    } catch {\n      const ta = document.createElement('textarea');\n      ta.value = text;\n      document.body.appendChild(ta);\n      ta.select();\n      document.execCommand('copy');\n      ta.remove();\n      toast('📋 HTML 代码已复制');\n    }\n  };\n}\n\nfunction loadImageFile(file) {\n  if (!file) return;\n  const url = URL.createObjectURL(file);\n  const img = new Image();\n  img.onload = () => {\n    state.image = img;\n    const dz = $('dropzone');\n    dz.innerHTML = `<img src=\"${url}\" alt=\"\"><div>${file.name}</div><small>点击可重新选择</small>`;\n    redrawPreview();\n  };\n  img.src = url;\n}\n\n// ---------- init ----------\nbind();\nrenderFileList();\nredrawPreview();\n",
+  "render.js": "// Canvas rendering engine: turns a design config into a raster icon at any size.\n// Browser-only (depends on Canvas 2D). Knows the platform correctness rules:\n//  - browser tab favicons may be transparent with rounded corners (bleed = false)\n//  - Apple touch and Android (maskable) icons must be full-bleed & opaque and keep\n//    their content inside the safe zone (bleed = true).\n\nconst EMOJI_FONT =\n  '\"Apple Color Emoji\",\"Segoe UI Emoji\",\"Noto Color Emoji\",\"Twemoji Mozilla\",sans-serif';\nconst TEXT_FONT =\n  'Arial,\"Helvetica Neue\",Helvetica,\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",sans-serif';\n\nfunction roundedRectPath(ctx, x, y, w, h, r) {\n  const rr = Math.max(0, Math.min(r, w / 2, h / 2));\n  ctx.beginPath();\n  ctx.moveTo(x + rr, y);\n  ctx.arcTo(x + w, y, x + w, y + h, rr);\n  ctx.arcTo(x + w, y + h, x, y + h, rr);\n  ctx.arcTo(x, y + h, x, y, rr);\n  ctx.arcTo(x, y, x + w, y, rr);\n  ctx.closePath();\n}\n\n// Gradient direction matching CSS linear-gradient(angle): 0deg = up, 90deg = right.\nfunction makeGradient(ctx, size, bg) {\n  const angle = bg.angle === undefined ? 90 : bg.angle;\n  const rad = (angle * Math.PI) / 180;\n  const dx = Math.sin(rad);\n  const dy = -Math.cos(rad);\n  const g = ctx.createLinearGradient(\n    size * (0.5 - dx / 2),\n    size * (0.5 - dy / 2),\n    size * (0.5 + dx / 2),\n    size * (0.5 + dy / 2)\n  );\n  g.addColorStop(0, bg.color);\n  g.addColorStop(1, bg.color2);\n  return g;\n}\n\nfunction autoFontScale(kind, text) {\n  const len = [...String(text)].length;\n  if (kind === 'emoji') {\n    if (len <= 1) return 0.6;\n    if (len === 2) return 0.42;\n    if (len === 3) return 0.32;\n    return 0.26;\n  }\n  if (len <= 1) return 0.66;\n  if (len === 2) return 0.5;\n  if (len === 3) return 0.38;\n  return 0.3;\n}\n\n/**\n * Draw the icon described by `cfg` onto an existing canvas context.\n * @param {CanvasRenderingContext2D} ctx\n * @param {number} size - target edge in device pixels\n * @param {Object} cfg - design config\n * @param {Object} [opts]\n * @param {boolean} [opts.bleed] - full-bleed opaque icon (Apple/Android)\n * @param {number}  [opts.safePad] - extra safe-zone padding for full-bleed icons\n */\nfunction drawIcon(ctx, size, cfg, opts = {}) {\n  const bleed = !!opts.bleed;\n  const radius = bleed ? 0 : Math.max(0, Math.min(0.5, cfg.radius || 0));\n\n  ctx.clearRect(0, 0, size, size);\n\n  // Resolve background. Full-bleed icons must be opaque even if user picked transparent.\n  let bg = cfg.background || { type: 'solid', color: cfg.themeColor || '#2563eb' };\n  if (bleed && bg.type === 'transparent') {\n    bg = { type: 'solid', color: cfg.themeColor || '#ffffff' };\n  }\n\n  // Outer shape path (square when bleed, rounded otherwise).\n  const r = radius * size;\n  roundedRectPath(ctx, 0, 0, size, size, r);\n\n  if (bg.type !== 'transparent') {\n    ctx.fillStyle =\n      bg.type === 'gradient' ? makeGradient(ctx, size, bg) : bg.color;\n    ctx.fill();\n  }\n  ctx.save();\n  roundedRectPath(ctx, 0, 0, size, size, r);\n  ctx.clip();\n\n  // Content metrics.\n  const basePad = Math.max(0, cfg.padding || 0);\n  const pad = bleed ? Math.max(basePad, opts.safePad || 0.1) : basePad;\n  const inner = size * (1 - pad * 2);\n  const cx = size / 2;\n  const cy = size / 2;\n\n  if (cfg.source === 'image' && cfg.image) {\n    const img = cfg.image;\n    const iw = img.naturalWidth || img.width;\n    const ih = img.naturalHeight || img.height;\n    if (cfg.imageFit === 'cover') {\n      const s = Math.max(inner / iw, inner / ih);\n      const dw = iw * s;\n      const dh = ih * s;\n      ctx.drawImage(img, cx - dw / 2, cy - dh / 2, dw, dh);\n    } else {\n      const s = Math.min(inner / iw, inner / ih);\n      const dw = iw * s;\n      const dh = ih * s;\n      ctx.drawImage(img, cx - dw / 2, cy - dh / 2, dw, dh);\n    }\n  } else {\n    const kind = cfg.source === 'text' ? 'text' : 'emoji';\n    const text = cfg.text || (kind === 'emoji' ? '🦞' : 'A');\n    const font = kind === 'text' ? TEXT_FONT : EMOJI_FONT;\n    const fontSize = inner * autoFontScale(kind, text);\n    ctx.font = `${fontSize}px ${font}`;\n    ctx.textAlign = 'center';\n    ctx.textBaseline = 'middle';\n    if (kind === 'text') ctx.fillStyle = cfg.textColor || '#ffffff';\n    // Emoji glyphs sit slightly high; nudge down for visual centering.\n    ctx.fillText(text, cx, cy + (kind === 'emoji' ? size * 0.02 : 0));\n  }\n\n  ctx.restore();\n}\n\n/**\n * Render to a fresh canvas and return it.\n * @returns {HTMLCanvasElement}\n */\nfunction renderCanvas(size, cfg, opts) {\n  const canvas = document.createElement('canvas');\n  canvas.width = size;\n  canvas.height = size;\n  const ctx = canvas.getContext('2d');\n  drawIcon(ctx, size, cfg, opts);\n  return canvas;\n}\n\n/** Convert a canvas to PNG bytes. */\nfunction canvasToPng(canvas) {\n  return new Promise((resolve, reject) => {\n    canvas.toBlob((blob) => {\n      if (!blob) {\n        reject(new Error('PNG encoding failed'));\n        return;\n      }\n      const reader = new FileReader();\n      reader.onload = () => resolve(new Uint8Array(reader.result));\n      reader.onerror = () => reject(reader.error);\n      reader.readAsArrayBuffer(blob);\n    }, 'image/png');\n  });\n}\n\nObject.assign(exports, { drawIcon, renderCanvas, canvasToPng });\n",
+  "ico.js": "// Windows ICO (.ico) container builder.\n// Embeds PNG-compressed images, which is supported by Windows Vista+, all modern\n// desktop browsers (Chrome/Edge/Firefox/Safari) and modern OS icon loaders.\n// Reference: MS-ICO (Microsoft ICONDIR / ICONDIRENTRY) specification.\n// Pure, dependency-free, isomorphic.\n\n/**\n * @typedef {Object} IcoImage\n * @property {number} width  - pixel width (1..256)\n * @property {number} height - pixel height (1..256)\n * @property {Uint8Array} data - encoded PNG bytes\n */\n\n/**\n * Build a multi-resolution favicon.ico.\n * @param {IcoImage[]} images\n * @returns {Uint8Array} complete .ico bytes\n */\nfunction buildIco(images) {\n  if (!Array.isArray(images) || images.length === 0) {\n    throw new Error('buildIco requires at least one image');\n  }\n  if (images.length > 65535) {\n    throw new Error('ICO container supports at most 65535 images');\n  }\n\n  const n = images.length;\n  const headerSize = 6 + n * 16;\n  let total = headerSize;\n  for (const im of images) {\n    if (!im.data || im.data.length === 0) {\n      throw new Error(`ICO entry ${im.width}x${im.height} has empty data`);\n    }\n    if (im.width > 256 || im.height > 256) {\n      throw new Error('ICO entries must be <= 256px');\n    }\n    total += im.data.length;\n  }\n\n  const buf = new Uint8Array(total);\n  const dv = new DataView(buf.buffer);\n\n  // ICONDIR\n  dv.setUint16(0, 0, true); // reserved, must be 0\n  dv.setUint16(2, 1, true); // type: 1 = icon (.ico)\n  dv.setUint16(4, n, true); // number of images\n\n  let offset = headerSize;\n  images.forEach((im, i) => {\n    const e = 6 + i * 16; // ICONDIRENTRY start\n    dv.setUint8(e + 0, im.width >= 256 ? 0 : im.width); // 0 => 256\n    dv.setUint8(e + 1, im.height >= 256 ? 0 : im.height);\n    dv.setUint8(e + 2, 0); // color count (0 = no palette)\n    dv.setUint8(e + 3, 0); // reserved\n    dv.setUint16(e + 4, 1, true); // color planes\n    dv.setUint16(e + 6, 32, true); // bits per pixel\n    dv.setUint32(e + 8, im.data.length, true); // size of image data\n    dv.setUint32(e + 12, offset, true); // offset to image data\n    buf.set(im.data, offset);\n    offset += im.data.length;\n  });\n\n  return buf;\n}\n\nObject.assign(exports, { buildIco });\n",
+  "zip.js": "// Minimal ZIP archive writer (APPNOTE 6.3.x), STORE method (no compression).\n// Favicons are already-compressed PNGs, so STORE is both correct and fast.\n// Produces deterministic output for a fixed date. Pure, dependency-free, isomorphic.\n\nconst {crc32} = require('crc32.js');\n\nconst encoder = new TextEncoder();\n\nfunction dosDateTime(date) {\n  const year = date.getFullYear();\n  if (year < 1980) {\n    // DOS format has no representation before 1980; clamp to the epoch.\n    return { dosTime: 0, dosDate: 0x21 }; // 1980-01-01\n  }\n  const dosTime =\n    (date.getHours() << 11) | (date.getMinutes() << 5) | (Math.floor(date.getSeconds() / 2) & 0x1f);\n  const dosDate =\n    (((year - 1980) & 0x7f) << 9) | ((date.getMonth() + 1) << 5) | date.getDate();\n  return { dosTime, dosDate };\n}\n\n/**\n * @typedef {Object} ZipFile\n * @property {string} name - path within the archive (use '/' separators)\n * @property {Uint8Array} data\n */\n\n/**\n * Build a ZIP archive in memory.\n * @param {ZipFile[]} files\n * @param {Object} [opts]\n * @param {Date} [opts.date] - fixed modification time for deterministic archives\n * @returns {Uint8Array} complete .zip bytes\n */\nfunction buildZip(files, opts = {}) {\n  if (!Array.isArray(files) || files.length === 0) {\n    throw new Error('buildZip requires at least one file');\n  }\n  const date = opts.date || new Date(2026, 0, 1, 0, 0, 0);\n  const { dosTime, dosDate } = dosDateTime(date);\n\n  const localHeaders = [];\n  const centralHeaders = [];\n  let localOffset = 0;\n\n  files.forEach((f) => {\n    const name = encoder.encode(f.name);\n    const data = f.data instanceof Uint8Array ? f.data : new Uint8Array(f.data);\n    const crc = crc32(data);\n    const size = data.length;\n\n    // ---- Local file header (30 bytes + name) ----\n    const lh = new Uint8Array(30 + name.length);\n    const ldv = new DataView(lh.buffer);\n    ldv.setUint32(0, 0x04034b50, true); // signature\n    ldv.setUint16(4, 20, true); // version needed to extract (2.0)\n    ldv.setUint16(6, 0x0800, true); // general purpose bit 11: UTF-8 names\n    ldv.setUint16(8, 0, true); // compression method: 0 = stored\n    ldv.setUint16(10, dosTime, true);\n    ldv.setUint16(12, dosDate, true);\n    ldv.setUint32(14, crc, true);\n    ldv.setUint32(18, size, true); // compressed size\n    ldv.setUint32(22, size, true); // uncompressed size\n    ldv.setUint16(26, name.length, true);\n    ldv.setUint16(28, 0, true); // extra field length\n    lh.set(name, 30);\n\n    const thisOffset = localOffset;\n    localHeaders.push(lh, data);\n    localOffset += lh.length + data.length;\n\n    // ---- Central directory header (46 bytes + name) ----\n    const ch = new Uint8Array(46 + name.length);\n    const cdv = new DataView(ch.buffer);\n    cdv.setUint32(0, 0x02014b50, true); // signature\n    cdv.setUint16(4, 20, true); // version made by (2.0, DOS attribute host)\n    cdv.setUint16(6, 20, true); // version needed\n    cdv.setUint16(8, 0x0800, true); // UTF-8 flag\n    cdv.setUint16(10, 0, true); // stored\n    cdv.setUint16(12, dosTime, true);\n    cdv.setUint16(14, dosDate, true);\n    cdv.setUint32(16, crc, true);\n    cdv.setUint32(20, size, true);\n    cdv.setUint32(24, size, true);\n    cdv.setUint16(28, name.length, true);\n    cdv.setUint16(30, 0, true); // extra\n    cdv.setUint16(32, 0, true); // comment\n    cdv.setUint16(34, 0, true); // disk number start\n    cdv.setUint16(36, 0, true); // internal file attributes\n    cdv.setUint32(38, 0, true); // external file attributes\n    cdv.setUint32(42, thisOffset, true); // relative offset of local header\n    ch.set(name, 46);\n    centralHeaders.push(ch);\n  });\n\n  const centralSize = centralHeaders.reduce((a, b) => a + b.length, 0);\n\n  // ---- End of central directory record (22 bytes) ----\n  const eocd = new Uint8Array(22);\n  const edv = new DataView(eocd.buffer);\n  edv.setUint32(0, 0x06054b50, true);\n  edv.setUint16(4, 0, true); // disk number\n  edv.setUint16(6, 0, true); // disk where central directory starts\n  edv.setUint16(8, files.length, true); // entries on this disk\n  edv.setUint16(10, files.length, true); // total entries\n  edv.setUint32(12, centralSize, true);\n  edv.setUint32(16, localOffset, true); // central directory offset\n  edv.setUint16(20, 0, true); // comment length\n\n  const total = localOffset + centralSize + 22;\n  const out = new Uint8Array(total);\n  let p = 0;\n  for (const part of localHeaders) {\n    out.set(part, p);\n    p += part.length;\n  }\n  for (const part of centralHeaders) {\n    out.set(part, p);\n    p += part.length;\n  }\n  out.set(eocd, p);\n  return out;\n}\n\nObject.assign(exports, { buildZip });\n",
+  "crc32.js": "// CRC-32 (ISO 3309 / zlib polynomial 0xEDB88320), reflected, init 0xFFFFFFFF, xorOut 0xFFFFFFFF.\n// Pure, dependency-free, isomorphic (browser + Node). Used by the ZIP writer.\n\nconst TABLE = (() => {\n  const t = new Uint32Array(256);\n  for (let n = 0; n < 256; n++) {\n    let c = n;\n    for (let k = 0; k < 8; k++) {\n      c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;\n    }\n    t[n] = c >>> 0;\n  }\n  return t;\n})();\n\n/**\n * Compute CRC-32 over a byte array.\n * @param {Uint8Array} data\n * @param {number} [prev] - running CRC for incremental use (raw, pre-xor)\n * @returns {number} unsigned 32-bit CRC\n */\nfunction crc32(data, prev) {\n  let c = prev === undefined ? 0xffffffff : prev ^ 0xffffffff;\n  for (let i = 0; i < data.length; i++) {\n    c = TABLE[(c ^ data[i]) & 0xff] ^ (c >>> 8);\n  }\n  return (c ^ 0xffffffff) >>> 0;\n}\n\nObject.assign(exports, { crc32 });\n",
+  "svgfavicon.js": "// Scalable SVG favicon builder. Modern browsers (Chrome/Edge/Firefox/Safari) and\n// bookmark tools accept a single resolution-independent favicon.svg.\n// Pure string builder, dependency-free, isomorphic.\n\nfunction escapeXml(s) {\n  return String(s)\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;')\n    .replace(/\"/g, '&quot;')\n    .replace(/'/g, '&apos;');\n}\n\nconst EMOJI_FONT =\n  '\"Apple Color Emoji\",\"Segoe UI Emoji\",\"Noto Color Emoji\",\"Twemoji Mozilla\",sans-serif';\nconst TEXT_FONT =\n  'Arial,\"Helvetica Neue\",Helvetica,\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",sans-serif';\n\nfunction autoFontSize(kind, text) {\n  const len = [...String(text)].length;\n  if (kind === 'emoji') {\n    if (len <= 1) return 60;\n    if (len === 2) return 42;\n    if (len === 3) return 32;\n    return 26;\n  }\n  if (len <= 1) return 66;\n  if (len === 2) return 50;\n  if (len === 3) return 38;\n  return 30;\n}\n\n/**\n * Build an SVG favicon string on a 100x100 viewBox.\n * @param {Object} cfg\n * @param {'emoji'|'text'} cfg.kind\n * @param {string} cfg.text\n * @param {string} [cfg.textColor]\n * @param {Object} cfg.background\n * @param {'transparent'|'solid'|'gradient'} cfg.background.type\n * @param {string} [cfg.background.color]\n * @param {string} [cfg.background.color2]\n * @param {number} [cfg.background.angle] - CSS-style degrees (0 = up, 90 = right)\n * @param {number} [cfg.radius] - corner radius as fraction of edge, 0..0.5\n * @param {number} [cfg.fontSize] - override font size in viewBox units\n * @returns {string} standalone SVG document\n */\nfunction buildSvgFavicon(cfg) {\n  const {\n    kind = 'emoji',\n    text = '🦞',\n    textColor = '#ffffff',\n    background = { type: 'solid', color: '#2563eb' },\n    radius = 0.18,\n  } = cfg;\n\n  const rx = Math.max(0, Math.min(0.5, radius)) * 100;\n  const fontSize = cfg.fontSize || autoFontSize(kind, text);\n  const isEmoji = kind === 'emoji';\n  const font = isEmoji ? EMOJI_FONT : TEXT_FONT;\n\n  let defs = '';\n  let fill = 'none';\n  if (background.type === 'solid') {\n    fill = background.color;\n  } else if (background.type === 'gradient') {\n    const angle = background.angle === undefined ? 90 : background.angle;\n    const rad = (angle * Math.PI) / 180;\n    const dx = Math.sin(rad);\n    const dy = -Math.cos(rad);\n    const x1 = 0.5 - dx / 2;\n    const y1 = 0.5 - dy / 2;\n    const x2 = 0.5 + dx / 2;\n    const y2 = 0.5 + dy / 2;\n    defs =\n      `<defs><linearGradient id=\"g\" x1=\"${x1.toFixed(4)}\" y1=\"${y1.toFixed(4)}\" ` +\n      `x2=\"${x2.toFixed(4)}\" y2=\"${y2.toFixed(4)}\">` +\n      `<stop offset=\"0\" stop-color=\"${background.color}\"/>` +\n      `<stop offset=\"1\" stop-color=\"${background.color2}\"/></linearGradient></defs>`;\n    fill = 'url(#g)';\n  }\n\n  const rect =\n    background.type === 'transparent'\n      ? ''\n      : `<rect width=\"100\" height=\"100\" rx=\"${rx}\" ry=\"${rx}\" fill=\"${fill}\"/>`;\n\n  const textAttrs = isEmoji ? '' : `fill=\"${textColor}\"`;\n  const textEl =\n    `<text x=\"50\" y=\"51\" text-anchor=\"middle\" dominant-baseline=\"central\" ` +\n    `font-family='${font}' font-size=\"${fontSize}\" ${textAttrs}>${escapeXml(text)}</text>`;\n\n  return (\n    `<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\" ` +\n    `width=\"100\" height=\"100\">${defs}${rect}${textEl}</svg>`\n  );\n}\n\nObject.assign(exports, { buildSvgFavicon });\n",
+  "manifest.js": "// Web App Manifest (W3C) and HTML <head> link snippet builders.\n// Pure, dependency-free, isomorphic.\n\n/**\n * Build site.webmanifest contents.\n * @param {Object} cfg\n * @param {string} cfg.name\n * @param {string} [cfg.shortName]\n * @param {string} [cfg.description]\n * @param {string} [cfg.themeColor]\n * @param {string} [cfg.backgroundColor]\n * @param {string} [cfg.startUrl]\n * @param {string} [cfg.display]\n * @param {Array<{src:string,sizes:string,type?:string,purpose?:string}>} [cfg.icons]\n * @returns {string} pretty JSON\n */\nfunction buildManifest(cfg) {\n  const manifest = {\n    name: cfg.name || 'My App',\n    short_name: cfg.shortName || cfg.name || 'My App',\n    description: cfg.description || '',\n    icons: cfg.icons || [\n      { src: '/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },\n      {\n        src: '/android-chrome-512x512.png',\n        sizes: '512x512',\n        type: 'image/png',\n        purpose: 'any maskable',\n      },\n    ],\n    theme_color: cfg.themeColor || '#2563eb',\n    background_color: cfg.backgroundColor || '#ffffff',\n    display: cfg.display || 'standalone',\n    start_url: cfg.startUrl || '/',\n  };\n  // Drop empty description to keep the file clean.\n  if (!manifest.description) delete manifest.description;\n  return JSON.stringify(manifest, null, 2);\n}\n\nfunction trimSlash(p) {\n  return p.endsWith('/') ? p.slice(0, -1) : p;\n}\n\n/**\n * Build the copy-paste <head> links for every generated asset.\n * @param {Object} [opts]\n * @param {string} [opts.basePath] - e.g. '/' or '/static/icons'\n * @param {boolean} [opts.svg]\n * @param {boolean} [opts.manifest]\n * @returns {string} HTML\n */\nfunction buildHtmlLinks(opts = {}) {\n  const base = trimSlash(opts.basePath === undefined ? '/' : opts.basePath);\n  const withSvg = opts.svg !== false;\n  const withManifest = opts.manifest !== false;\n\n  const lines = [\n    '<link rel=\"icon\" href=\"' + base + '/favicon.ico\" sizes=\"32x32\">',\n    '<link rel=\"icon\" href=\"' + base + '/favicon-16x16.png\" sizes=\"16x16\" type=\"image/png\">',\n    '<link rel=\"icon\" href=\"' + base + '/favicon-32x32.png\" sizes=\"32x32\" type=\"image/png\">',\n  ];\n  if (withSvg) {\n    lines.push(\n      '<link rel=\"icon\" href=\"' + base + '/favicon.svg\" type=\"image/svg+xml\">'\n    );\n  }\n  lines.push(\n    '<link rel=\"apple-touch-icon\" href=\"' + base + '/apple-touch-icon.png\">' // 180x180\n  );\n  if (withManifest) {\n    lines.push('<link rel=\"manifest\" href=\"' + base + '/site.webmanifest\">');\n  }\n  lines.push('<meta name=\"theme-color\" content=\"' + (opts.themeColor || '#2563eb') + '\">');\n  return lines.join('\\n');\n}\n\nObject.assign(exports, { buildManifest, buildHtmlLinks });\n"
+};
+  var __cache = {};
+  function __require(key){
+    if(__cache[key]) return __cache[key].exports;
+    var module = { exports: {} };
+    __cache[key] = module;
+    var fn = new Function('module','exports','require', __src[key]);
+    fn(module, module.exports, __require);
+    return module.exports;
+  }
+  __require('app.js');
+})();
+</script>
+</body>
+</html>
